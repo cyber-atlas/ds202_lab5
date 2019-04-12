@@ -1,0 +1,22 @@
+---
+title: "team"
+author: "cyber-atlas"
+date: "April 11, 2019"
+output: html_document
+---
+
+```{r}
+#acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
+
+acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
+class(acc)
+
+#person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
+
+person <- read.csv('person.csv', stringsAsFactors = FALSE)
+
+class(person)
+?data.frame
+
+tail(acc)
+```

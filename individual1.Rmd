@@ -1,0 +1,12 @@
+---
+title: "individual1"
+author: "cyber-atlas"
+date: "April 11, 2019"
+output: html_document
+---
+
+```{r}
+
+names(acc)
+
+```

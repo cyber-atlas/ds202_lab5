@@ -28,8 +28,11 @@ tab
 
 max(tab)
 
-max.col(tab)
+min(tab)
 
+max.col(tab)
+names(tab)[which.min(apply(tab,MARGIN=2,min))]
+  which.max(apply(df,MARGIN=2,max))
 head(tab)
 
 ```
@@ -39,10 +42,12 @@ head(tab)
 head(acc)
 
 lab <- c("Sunday", 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
-ggplot(acc, aes(x=DAY_WEEK, color= DAY_WEEK))+ 
-  geom_bar()
-  #scale_x_discrete(
-    #breaks = 0:6,
-    #labels=lab )
+ggplot(data=acc, aes(x=DAY_WEEK, color= DAY_WEEK, fill=stat(count)))+
+  geom_bar()+
+  #geom_bar(aes(y=stat(count)))+
+  geom_text(stat='count', aes(label=..count..), vjust = -.5)+
+  scale_y_continuous(limits=c(0,6500))
+
+
 
 ```

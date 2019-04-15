@@ -6,7 +6,43 @@ output: html_document
 ---
 
 ```{r}
+library('ggplot2')
+
+acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
+
+
+person <- read.csv('person.csv', stringsAsFactors = FALSE)
 
 names(acc)
+names(person)
+
+```
+
+Assuming the first day of the week is Sunday
+
+```{r}
+acc$DAY_WEEK
+tab <- table(acc$DAY_WEEK)
+
+tab
+
+max(tab)
+
+max.col(tab)
+
+head(tab)
+
+```
+
+```{r}
+
+head(acc)
+
+lab <- c("Sunday", 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
+ggplot(acc, aes(x=DAY_WEEK, color= DAY_WEEK))+ 
+  geom_bar()
+  #scale_x_discrete(
+    #breaks = 0:6,
+    #labels=lab )
 
 ```

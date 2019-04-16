@@ -74,9 +74,8 @@ levels(acc$'DRUNK_DR')
 ggplot(data=acc, aes(x=DRUNK_DR, color=DRUNK_DR))+
          #fill=stat(count)))+
   geom_bar()+
-  scale_y_continuous(limits=c(0,3000))+
  # geom_bar(aes(y=frequency(DRUNK_DR)))+
-  geom_text(stat='count', aes(label=..count..), angle=0,vjust = -.25)+
+  geom_text(stat='count', aes(label=..count..), angle=0,vjust = -.1)
   #scale_y_continuous(limits=c(0,3000))
   #theme(axis.text.x = element_text(angle =75, hjust=1))
   #facet_wrap(~DRUNK_DR)

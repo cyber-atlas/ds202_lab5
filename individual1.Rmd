@@ -7,6 +7,8 @@ output: html_document
 
 ```{r}
 library('ggplot2')
+library('dplyr')
+library('tidyverse')
 
 acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
 
@@ -14,6 +16,7 @@ acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
 person <- read.csv('person.csv', stringsAsFactors = FALSE)
 
 names(acc)
+person$PER_TYP
 names(person)
 
 ```
@@ -83,7 +86,38 @@ ggplot(data=acc, aes(x=DRUNK_DR, color=DRUNK_DR))+
 
 ```
 
-```{r}
+Part 2
 
+Identify the drivers
+
+** TODO skipping over this, not sure which variables to join the tables on **
+
+```{r}
+# TODO finsih
+#Drivers are person type 1, so only select those
+drivers <- person %>% filter(PER_TYP == 1)
+
+
+acc
+person
+
+
+```
+
+
+Plot choropleth map of accidents ona county level
+```{r}
+#Import the frpp data telling us state code info
+frpp <- readxl::read_xlsx('FRPP GLC United States.xlsx')
+#copy acc in case we need it again
+acc2 <- acc
+#Rename the state to State Code so we can do a merge
+names(acc2)[names(acc2) == "STATE"] <- "State Code"
+head(acc2)
+#TODO
+acc2$"State Code"<- factor(acc2[,'State Code'])
+frpp$"State Code"<- factor(frpp[,'State Code'])
+
+inner_join(acc2,frpp, by= "State Code" )
 
 ```

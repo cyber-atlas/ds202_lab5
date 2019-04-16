@@ -35,8 +35,19 @@ ggplot(acc,aes(x=factor(HOUR),fill=factor(HOUR))) + geom_bar(stat_count='identit
 ggplot(acc,aes(x=factor(DRUNK_DR),fill=factor(DRUNK_DR))) + geom_bar(stat_count='identity') + ylab('Number of Crashes') + xlab("Number of Drunk Drivers") + ggtitle("Number of Crashes With Drunk Drivers")
 ```
 
+Person Type 1 is the Driver of the vehicle
+County appears in the PERSON and ACCIDENT will innerjoin with this
+```{r}
+library(tidyverse)
+person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv", stringsAsFactors = FALSE)
+filperson = filter(person, PER_TYP==1)
+joined = inner_join(filperson, acc, by = "ST_CASE", type = "inner", match = "all")
+head(joined)
+```
 
 ```{r}
-
-
+joined = filter(joined, joined$HOUR.x < 25)
+joined = filter(joined, joined$SEX < 3)
+ggplot(joined,aes(x=HOUR.x,fill=factor(SEX))) + geom_bar(position="dodge") + facet_wrap(joined$DAY_WEEK)
+head(joined)
 ```

@@ -16,10 +16,7 @@ class(acc)
 
 person <- read.csv('person.csv', stringsAsFactors = FALSE)
 
-class(person)
-?data.frame
 
-tail(acc)
 ```
 
 
@@ -31,7 +28,7 @@ levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=
 
 levels(acc$DAY_WEEK)
 
-ggplot(data=acc, aes(x=DAY_WEEK, color= DAY_WEEK))+
+ggplot(data=acc, aes(x=DAY_WEEK, fill= DAY_WEEK))+
   geom_bar()+
   #geom_bar(aes(y=stat(count)))+
   geom_text(stat='count', aes(label=..count..), vjust = -.5)+
@@ -46,22 +43,21 @@ ggplot(data=acc, aes(x=DAY_WEEK, color= DAY_WEEK))+
 Show the breakdown of the accidents by hour
 
 ```{r}
-#TODO why is there an hour 99? WAT
-
 class(acc$HOUR)
 
 acc$HOUR<- factor(acc[,'HOUR'])
 
+levels(acc$HOUR)[levels(acc$HOUR) == 99] <- "unknown"
+
 levels(acc$HOUR)
 
-ggplot(data=acc, aes(x=HOUR, color= stat(count)))+
+ggplot(data=acc, aes(x=HOUR, fill= stat(count), color=HOUR))+
          #fill=stat(count)))+
   geom_bar()+
   #geom_bar(aes(y=stat(count)))+
   geom_text(stat='count', aes(label=..count..), angle=90,hjust = -.5)+
   scale_y_continuous(limits=c(0,2500))+
   theme(axis.text.x = element_text(angle =75, hjust=1))
-
 ```
 
 
@@ -76,7 +72,7 @@ acc$DRUNK_DR<- factor(acc[,'DRUNK_DR'])
 
 levels(acc$'DRUNK_DR')
 
-ggplot(data=acc, aes(x=DRUNK_DR, color=DRUNK_DR))+
+ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
          #fill=stat(count)))+
   geom_bar()+
  # geom_bar(aes(y=frequency(DRUNK_DR)))+
@@ -88,5 +84,4 @@ ggplot(data=acc, aes(x=DRUNK_DR, color=DRUNK_DR))+
 
 ```
 
-```
 

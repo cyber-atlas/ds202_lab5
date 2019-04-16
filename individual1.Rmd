@@ -47,11 +47,11 @@ class(acc$HOUR)
 
 acc$HOUR<- factor(acc[,'HOUR'])
 
-#levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
+levels(acc$HOUR)[levels(acc$HOUR) == 99] <- "unknown"
 
 levels(acc$HOUR)
 
-ggplot(data=acc, aes(x=HOUR, color= stat(count)))+
+ggplot(data=acc, aes(x=HOUR, fill= stat(count)))+
          #fill=stat(count)))+
   geom_bar()+
   #geom_bar(aes(y=stat(count)))+
@@ -79,6 +79,11 @@ ggplot(data=acc, aes(x=DRUNK_DR, color=DRUNK_DR))+
   #scale_y_continuous(limits=c(0,3000))
   #theme(axis.text.x = element_text(angle =75, hjust=1))
   #facet_wrap(~DRUNK_DR)
+
+
+```
+
+```{r}
 
 
 ```

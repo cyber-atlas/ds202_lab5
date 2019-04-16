@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r}
+library('ggplot2')
 #acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
 
 acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
@@ -19,4 +20,24 @@ class(person)
 ?data.frame
 
 tail(acc)
+```
+
+
+```{r}
+class(acc$DAY_WEEK)
+
+acc$DAY_WEEK <- factor(acc[,'DAY_WEEK'])
+levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
+
+levels(acc$DAY_WEEK)
+
+ggplot(data=acc, aes(x=DAY_WEEK, color= DAY_WEEK))+
+  geom_bar()+
+  #geom_bar(aes(y=stat(count)))+
+  geom_text(stat='count', aes(label=..count..), vjust = -.5)+
+  scale_y_continuous(limits=c(0,6500))+
+  theme(axis.text.x = element_text(angle =45, hjust=1))
+
+
+
 ```

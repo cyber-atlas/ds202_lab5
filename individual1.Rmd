@@ -18,31 +18,16 @@ names(person)
 
 ```
 
-Assuming the first day of the week is Sunday
+Assuming the first day of the week is Sunday in this case
 
-```{r}
-acc$DAY_WEEK
-tab <- table(acc$DAY_WEEK)
-
-tab
-
-max(tab)
-
-min(tab)
-
-max.col(tab)
-names(tab)[which.min(apply(tab,MARGIN=2,min))]
-  which.max(apply(df,MARGIN=2,max))
-head(tab)
-
-```
 
 ```{r}
 
-head(acc)
 class(acc$DAY_WEEK)
+
 acc$DAY_WEEK <- factor(acc[,'DAY_WEEK'])
 levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
+
 levels(acc$DAY_WEEK)
 
 ggplot(data=acc, aes(x=DAY_WEEK, color= DAY_WEEK, fill=stat(count)))+
@@ -52,5 +37,25 @@ ggplot(data=acc, aes(x=DAY_WEEK, color= DAY_WEEK, fill=stat(count)))+
   scale_y_continuous(limits=c(0,6500))+
   theme(axis.text.x = element_text(angle =45, hjust=1))
 
+
+```
+
+What time of day do accidents most commonly occur
+
+```{r}
+class(acc$HOUR)
+
+acc$HOUR<- factor(acc[,'HOUR'])
+
+#levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
+
+levels(acc$HOUR)
+
+ggplot(data=acc, aes(x=HOUR, color= stat(count), fill=stat(count)))+
+  geom_bar()+
+  #geom_bar(aes(y=stat(count)))+
+  geom_text(stat='count', aes(label=..count..), angle=90,hjust = -.5)+
+  scale_y_continuous(limits=c(0,2500))+
+  theme(axis.text.x = element_text(angle =75, hjust=1))
 
 ```

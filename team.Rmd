@@ -41,3 +41,52 @@ ggplot(data=acc, aes(x=DAY_WEEK, color= DAY_WEEK))+
 
 
 ```
+
+
+Show the breakdown of the accidents by hour
+
+```{r}
+#TODO why is there an hour 99? WAT
+
+class(acc$HOUR)
+
+acc$HOUR<- factor(acc[,'HOUR'])
+
+levels(acc$HOUR)
+
+ggplot(data=acc, aes(x=HOUR, color= stat(count)))+
+         #fill=stat(count)))+
+  geom_bar()+
+  #geom_bar(aes(y=stat(count)))+
+  geom_text(stat='count', aes(label=..count..), angle=90,hjust = -.5)+
+  scale_y_continuous(limits=c(0,2500))+
+  theme(axis.text.x = element_text(angle =75, hjust=1))
+
+```
+
+
+
+```{r}
+
+class(acc$DRUNK_DR)
+
+acc$DRUNK_DR<- factor(acc[,'DRUNK_DR'])
+
+#levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
+
+levels(acc$'DRUNK_DR')
+
+ggplot(data=acc, aes(x=DRUNK_DR, color=DRUNK_DR))+
+         #fill=stat(count)))+
+  geom_bar()+
+ # geom_bar(aes(y=frequency(DRUNK_DR)))+
+  geom_text(stat='count', aes(label=..count..), angle=0,vjust = -.1)
+  #scale_y_continuous(limits=c(0,3000))
+  #theme(axis.text.x = element_text(angle =75, hjust=1))
+  #facet_wrap(~DRUNK_DR)
+
+
+```
+
+```
+

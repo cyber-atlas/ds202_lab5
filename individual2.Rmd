@@ -48,6 +48,29 @@ head(joined)
 ```{r}
 joined = filter(joined, joined$HOUR.x < 25)
 joined = filter(joined, joined$SEX < 3)
-ggplot(joined,aes(x=HOUR.x,fill=factor(SEX))) + geom_bar(position="dodge") + facet_wrap(joined$DAY_WEEK)
-head(joined)
+joined$DAY_WEEK = factor(joined$DAY_WEEK,labels=c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"))
+ggplot(joined,aes(x=HOUR.x,fill=factor(SEX))) + geom_bar(position="dodge") + facet_wrap(joined$DAY_WEEK) + xlab("Hour of the Day") + ylab("Number of Crashes") + ggtitle("Number of Crashes Each Day of the Week by Hour and Sex") + guides(fill=guide_legend("SEX")) + scale_fill_discrete(name = "SEX", labels = c("Male","Female"))
+```
+
+
+```{r}
+library(tidyverse)
+GLC = readxl::read_xlsx("/Users/samuelshifflett/Documents/DS202/DS202_Github/ds202_lab5/ds202_lab5/GLC.xlsx")
+colnames(GLC) = GLC[1, ] 
+GLC = GLC[-1, ]
+names(GLC)
+counties = map_data("county")
+names(GLC)[6] = "COUNTY"
+names(GLC)[7] = "County_Name"
+names(GLC)
+GLC$COUNTY = factor(GLC$COUNTY)
+acc$COUNTY = factor(acc$COUNTY)
+names(counties)[6] = "County_Name"
+names(counties)
+countacc = inner_join(acc,GLC, by="COUNTY") %>% select(LATITUDE,LONGITUD,COUNTY,"County_Name",DAY,MONTH,YEAR,HOUR,"State Name")
+countacc = countacc %>% mutate(County_Name = tolower(County_Name))
+countaccgroup = countacc %>% group_by(County_Name) %>% summarise(total_crashes = n())
+countaccgroup = left_join(countaccgroup,counties, by="County_Name")
+countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long, y = lat,fill=total_crashes)) +
+  geom_polygon(aes(group=group))
 ```

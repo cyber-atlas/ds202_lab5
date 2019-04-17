@@ -71,6 +71,15 @@ countacc = inner_join(acc,GLC, by="COUNTY") %>% select(LATITUDE,LONGITUD,COUNTY,
 countacc = countacc %>% mutate(County_Name = tolower(County_Name))
 countaccgroup = countacc %>% group_by(County_Name) %>% summarise(total_crashes = n())
 countaccgroup = left_join(countaccgroup,counties, by="County_Name")
-countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long, y = lat,fill=total_crashes)) +
-  geom_polygon(aes(group=group))
+countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long, y = lat,fill=(total_crashes))) + geom_polygon(aes(group=group))
 ```
+
+Test to see if values are being summed in map instead of taking the true value of total_crashes
+```{r}
+washtest = countaccgroup %>% filter(region=="washington") %>% group_by(County_Name) %>% summarise(total_crashes=n())
+washtest = washtest %>% left_join(counties,by="County_Name")
+max(washtest$total_crashes)
+washtest %>% ggplot(aes(x = long, y = lat,fill=(total_crashes))) + geom_polygon(aes(group=group))
+```
+
+This method works because the largest value is 98 and the scale is from 0 to around 100

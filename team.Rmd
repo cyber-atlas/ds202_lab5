@@ -88,7 +88,8 @@ ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
 ##Part Two:
 #####Person Type 1 is the Driver of the vehicle
 ```{r}
-filperson = filter(person, PER_TYP==1)
+head(person$PER_TYP)
+filperson = filter(person, PER_TYP == 1)
 joined = inner_join(filperson, acc, by = "ST_CASE", type = "inner", match = "all")
 ```
 ###______Number of Crashes Each Day of the Week By Hour and Sex______
@@ -105,7 +106,8 @@ ggplot(joined,aes(x=HOUR.x,fill=factor(SEX))) + geom_bar(position="dodge") + fac
 GLC = readxl::read_xlsx("GLC.xlsx")
 colnames(GLC) = GLC[1, ] 
 GLC = GLC[-1, ]
-names(GLC)
+# names(GLC)
+head(GLC)
 counties = map_data("county")
 names(GLC)[6] = "COUNTY"
 names(GLC)[7] = "County_Name"
@@ -113,9 +115,12 @@ GLC$COUNTY = factor(GLC$COUNTY)
 acc$COUNTY = factor(acc$COUNTY)
 names(counties)[6] = "County_Name"
 countacc = inner_join(acc,GLC, by="COUNTY") %>% select(LATITUDE,LONGITUD,COUNTY,"County_Name",DAY,MONTH,YEAR,HOUR,"State Name")
+
 countacc = countacc %>% mutate(County_Name = tolower(County_Name))
 countaccgroup = countacc %>% group_by(County_Name) %>% summarise(total_crashes = n())
+
 countaccgroup = left_join(countaccgroup,counties, by="County_Name")
+
 countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long, y = lat,fill=total_crashes)) + geom_polygon(aes(group=group)) + ggtitle("Crashes Per County")  + guides(fill=guide_legend("Total Crashes")) + scale_fill_continuous(low="white",high = ("red"))
 ```
 
@@ -131,13 +136,12 @@ countaccseason = countaccseason %>% group_by(region,SEASON) %>% summarise(total_
 countaccseason = countaccseason %>% spread(SEASON,total_crashes)
 countaccseason = countaccseason %>% group_by(region) %>% summarise(ratioSUMbyWINT = SUMMER/WINTER)
 countaccseason = countaccseason %>% left_join(states,by="region")
-countaccseason %>% group_by("region") %>% ggplot(aes(x = long, y = lat,fill=ratioSUMbyWINT)) + geom_polygon(aes(group=group)) + ggtitle("Ratio of Total Crashes Per State (Summer/Winter)")  + guides(fill=guide_legend("Crash Percentage")) + scale_fill_continuous(low="red",high = ("white"))
+countaccseason %>% group_by("region") %>% ggplot(aes(x = long, y = lat,fill=ratioSUMbyWINT)) + geom_polygon(aes(group=group)) + ggtitle("Ratio of Total Crashes Per State (Summer/Winter)")  + guides(fill=guide_legend("Crash Percentage")) + scale_fill_continuous(low="green",high = ("black"))
 ```
 
-As you can see the map is most red in Delaware meaning that the difference in crashes is the largest. Therefore Delaware has the worst time driving in the winter months.
+As you can see the map is most light green in Delaware meaning that the difference in crashes is the largest. Therefore Delaware has the worst time driving in the winter months.
 
-
-
+Arizona is the most netural becasue it is the most black. So the grashes are about the same in summer and winter. 
 
 
 

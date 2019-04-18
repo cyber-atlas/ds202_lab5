@@ -106,7 +106,8 @@ head(driversAccByCase)
 ggplot(driversAccByCase, aes(x=factor(HOUR.y), fill=factor(SEX)))+
   geom_bar()+
   facet_wrap(~DAY_WEEK)+
-  theme(axis.text.x = element_text(angle =75, hjust=1))
+  theme(axis.text.x = element_text(angle =75, hjust=1, size= 8))
+  # geom_text(stat='count', aes(label=..count..), angle=90,hjust = -.5)
 
 ```
 
@@ -117,37 +118,62 @@ Plot choropleth map of accidents ona county level
 frpp <- readxl::read_xlsx('FRPP GLC United States.xlsx')
 #copy acc in case we need it again
 acc2 <- acc
-#Rename the state to State Code so we can do a merge
-#names(acc2)[names(acc2) == "STATE"] <- "State Code"
-names(acc2)[names(acc2) == "COUNTY"] <- "County Code"
-head(acc2)
-#TODO
-#acc2$"State Code"<- factor(acc2[,'State Code'])
-acc2$"County Code"<- factor(acc2[,'County Code'])
 #Need to save as a df first I guess
 frpp<-data.frame(frpp)
 class(frpp)
 colnames(frpp) <- frpp[1,]
-frpp <- frpp[-1,]
-head(frpp)
-#frpp$"State Code"<- factor(frpp[,'State Code'])
-frpp$"County Code"<- factor(frpp[,'County Code'])
-#frpp[,3]<- factor(frpp[,3])
-
-#inner_join(acc2,frpp, by= "State Code" )
-countyCodeDF<- inner_join(acc2,frpp, by= "County Code" )
-head(countyCodeDF)
-
+frpp <- frpp[-1, ]
+ head(frpp)
 countyPlottingInfo <- map_data("county")
 
-countyCodeDF <- countyCodeDF %>% mutate('County Name' = tolower('County Name'))
+names(frpp)[6] = "COUNTY"
+names(frpp)[7] = "County_Name"
+frpp$COUNTY = factor(frpp$COUNTY)
+acc2$COUNTY = factor(acc2$COUNTY)
+names(countyPlottingInfo)[6] = "County_Name"
 
-head(countyCodeDF)
+countacc = inner_join(acc2,frpp, by="COUNTY") %>% select(LATITUDE,LONGITUD,COUNTY,"County_Name",DAY,MONTH,YEAR,HOUR,"State Name")
 
-countyCodeDF <- countyCodeDF %>% group_by('County Name') %>%  summarize(n=n())
+countacc = countacc %>% 
+  mutate(County_Name = tolower(County_Name))
+countaccgroup = countacc %>% group_by(County_Name) %>% summarise(total_crashes = n())
+
+head(countaccgroup)
+head(countyPlottingInfo)
+
+countaccgroup = left_join(countaccgroup,countyPlottingInfo, by="County_Name")
+
+# countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long.x, y = lat.x, fill=total_crashes)) + geom_polygon(aes(group=group.x))   + guides(fill=guide_legend("Total Crashes"))
+countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long, y = lat, fill=total_crashes)) + geom_polygon(aes(group=group))   + guides(fill=guide_legend("Total Crashes"))
+
 
 ```
 
 
+```{r}
 
+states <- map_data("state")
+accBySzn <- countacc %>% 
+  group_by(County_Name,MONTH) %>% 
+  summarise(total_crashes=n())
+
+accBySzn <- transform(accBySzn, SEASON = case_when((accBySzn$MONTH >= 11 | accBySzn$MONTH <= 3) ~ "WINTER", (accBySzn$MONTH >= 5 & accBySzn$MONTH <= 8) ~ "SUMMER"))
+
+accBySzn = accBySzn[complete.cases(accBySzn[,4]),]
+accBySzn = accBySzn %>% group_by(County_Name,SEASON) %>% summarise(total_crash = sum(total_crashes))  
+accBySzn = accBySzn %>% left_join(counties,by="County_Name")
+accBySzn = accBySzn %>% group_by(region,SEASON) %>% summarise(total_crashes=sum(total_crash))
+accBySzn = accBySzn %>% spread(SEASON,total_crashes)
+
+accBySzn = accBySzn %>% group_by(region) %>% summarise(ratioSUMbyWINT = SUMMER/WINTER)
+accBySzn = accBySzn %>% left_join(states,by="region")
+# accBySzn %>% group_by("region")
+ggplot(accBySzn, aes(x = long, y = lat,fill=ratioSUMbyWINT)) + 
+  geom_polygon(aes(group=group)) +
+  guides(fill=guide_legend("Crash Percentage")) +
+  scale_fill_continuous(low="green",high = ("black"))
+
+```
+
+Becasuse the low of the Crash percentage is less than 1 but positive. Most of the crashes happen in winter. 
 

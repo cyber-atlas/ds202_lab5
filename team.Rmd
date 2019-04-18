@@ -1,3 +1,167 @@
+<<<<<<< HEAD
+---
+title: "team"
+author: "cyber-atlas, Sam Shifflett"
+date: "April 11, 2019"
+output: html_document
+---
+
+```{r}
+library('ggplot2')
+#acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
+
+acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
+class(acc)
+
+#person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
+
+person <- read.csv('person.csv', stringsAsFactors = FALSE)
+
+
+```
+
+
+```{r}
+class(acc$DAY_WEEK)
+
+acc$DAY_WEEK <- factor(acc[,'DAY_WEEK'])
+levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
+
+levels(acc$DAY_WEEK)
+
+ggplot(data=acc, aes(x=DAY_WEEK, fill= DAY_WEEK))+
+  geom_bar()+
+  #geom_bar(aes(y=stat(count)))+
+  geom_text(stat='count', aes(label=..count..), vjust = -.5)+
+  scale_y_continuous(limits=c(0,6500))+
+  theme(axis.text.x = element_text(angle =45, hjust=1))
+
+
+
+```
+
+
+Show the breakdown of the accidents by hour
+
+```{r}
+class(acc$HOUR)
+
+acc$HOUR<- factor(acc[,'HOUR'])
+
+levels(acc$HOUR)[levels(acc$HOUR) == 99] <- "unknown"
+
+levels(acc$HOUR)
+
+ggplot(data=acc, aes(x=HOUR, fill= stat(count), color=HOUR))+
+         #fill=stat(count)))+
+  geom_bar()+
+  #geom_bar(aes(y=stat(count)))+
+  geom_text(stat='count', aes(label=..count..), angle=90,hjust = -.5)+
+  scale_y_continuous(limits=c(0,2500))+
+  theme(axis.text.x = element_text(angle =75, hjust=1))
+```
+
+
+
+```{r}
+
+class(acc$DRUNK_DR)
+
+acc$DRUNK_DR<- factor(acc[,'DRUNK_DR'])
+
+#levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
+
+levels(acc$'DRUNK_DR')
+
+ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
+         #fill=stat(count)))+
+  geom_bar()+
+ # geom_bar(aes(y=frequency(DRUNK_DR)))+
+  geom_text(stat='count', aes(label=..count..), angle=0,vjust = -.1)
+  #scale_y_continuous(limits=c(0,3000))
+  #theme(axis.text.x = element_text(angle =75, hjust=1))
+  #facet_wrap(~DRUNK_DR)
+
+
+```
+
+##Prepare the Data and Packages
+```{r}
+acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
+library(tidyverse)
+library(ggplot2)
+```
+
+##Part One:
+###______Number of Crashes Each Day______
+```{r Number of Crashes Each Day}
+ggplot(acc,aes(x=factor(DAY_WEEK),fill=factor(DAY_WEEK))) + geom_bar(stat_count='identity') + ylab('Number of Crashes') + xlab("Day of the Week") + scale_x_discrete(breaks=c(1,2,3,4,5,6,7),labels=c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")) + ggtitle("Number of Crashes Each Day") + guides(fill=guide_legend("Days of the Week"))
+```
+
+###______Number of Crashes Each Hour______
+```{r}
+ggplot(acc,aes(x=factor(HOUR),fill=factor(HOUR))) + geom_bar(stat_count='identity') + ylab('Number of Crashes Per Hour') + xlab("Hour of Day") + ggtitle("Number of Crashes Each Hour") + guides(fill=guide_legend("Days of the Month"))
+```
+
+###______Number of Crashes With Drunk Drivers______
+```{r}
+ggplot(acc,aes(x=factor(DRUNK_DR),fill=factor(DRUNK_DR))) + geom_bar(stat_count='identity') + ylab('Number of Crashes') + xlab("Number of Drunk Drivers") + ggtitle("Number of Crashes With Drunk Drivers")  + guides(fill=guide_legend("Number of Drunks"))
+```
+
+##Part Two:
+#####Person Type 1 is the Driver of the vehicle
+```{r}
+person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv", stringsAsFactors = FALSE)
+filperson = filter(person, PER_TYP==1)
+joined = inner_join(filperson, acc, by = "ST_CASE", type = "inner", match = "all")
+```
+###______Number of Crashes Each Day of the Week By Hour and Sex______
+```{r}
+joined = filter(joined, joined$HOUR.x < 25)
+joined = filter(joined, joined$SEX < 3)
+joined$DAY_WEEK = factor(joined$DAY_WEEK,labels=c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"))
+ggplot(joined,aes(x=HOUR.x,fill=factor(SEX))) + geom_bar(position="dodge") + facet_wrap(joined$DAY_WEEK) + xlab("Hour of the Day") + ylab("Number of Crashes") + ggtitle("Number of Crashes Each Day of the Week by Hour and Sex") + guides(fill=guide_legend("SEX")) + scale_fill_discrete(name = "SEX", labels = c("Male","Female"))
+```
+
+##Part Three:
+###______Number of Crashes Per County______
+```{r}
+GLC = readxl::read_xlsx("/Users/samuelshifflett/Documents/DS202/DS202_Github/ds202_lab5/ds202_lab5/GLC.xlsx")
+colnames(GLC) = GLC[1, ] 
+GLC = GLC[-1, ]
+names(GLC)
+counties = map_data("county")
+names(GLC)[6] = "COUNTY"
+names(GLC)[7] = "County_Name"
+GLC$COUNTY = factor(GLC$COUNTY)
+acc$COUNTY = factor(acc$COUNTY)
+names(counties)[6] = "County_Name"
+countacc = inner_join(acc,GLC, by="COUNTY") %>% select(LATITUDE,LONGITUD,COUNTY,"County_Name",DAY,MONTH,YEAR,HOUR,"State Name")
+countacc = countacc %>% mutate(County_Name = tolower(County_Name))
+countaccgroup = countacc %>% group_by(County_Name) %>% summarise(total_crashes = n())
+countaccgroup = left_join(countaccgroup,counties, by="County_Name")
+countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long, y = lat,fill=total_crashes)) + geom_polygon(aes(group=group)) + ggtitle("Crashes Per County")  + guides(fill=guide_legend("Total Crashes")) + scale_fill_continuous(low="white",high = ("red"))
+```
+
+###______Ration of Crashes Per State by Season______
+```{r}
+states = map_data("state")
+countaccseason = countacc %>% group_by(County_Name,MONTH) %>% summarise(total_crashes=n())
+countaccseason = transform(countaccseason, SEASON = case_when((countaccseason$MONTH >= 11 | countaccseason$MONTH <= 3) ~ "WINTER", (countaccseason$MONTH >= 5 & countaccseason$MONTH <= 8) ~ "SUMMER"))
+countaccseason = countaccseason[complete.cases(countaccseason[,4]),]
+countaccseason = countaccseason %>% group_by(County_Name,SEASON) %>% summarise(total_crash = sum(total_crashes))  
+countaccseason = countaccseason %>% left_join(counties,by="County_Name")
+countaccseason = countaccseason %>% group_by(region,SEASON) %>% summarise(total_crashes=sum(total_crash))
+countaccseason = countaccseason %>% spread(SEASON,total_crashes)
+countaccseason = countaccseason %>% group_by(region) %>% summarise(ratioSUMbyWINT = SUMMER/WINTER)
+countaccseason = countaccseason %>% left_join(states,by="region")
+countaccseason %>% group_by("region") %>% ggplot(aes(x = long, y = lat,fill=ratioSUMbyWINT)) + geom_polygon(aes(group=group)) + ggtitle("Ratio of Total Crashes Per State (Summer/Winter)")  + guides(fill=guide_legend("Crash Percentage")) + scale_fill_continuous(low="red",high = ("white"))
+```
+
+As you can see the map is most red in Delaware meaning that the difference in crashes is the largest. Therefore Delaware has the worst time driving in the winter months.
+
+
+=======
 ---
 title: "team"
 author: "cyber-atlas"
@@ -87,3 +251,4 @@ ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
 ```
 
 
+>>>>>>> fe5751fdab3423f170a6d9ec38ad5fb3ea16a849

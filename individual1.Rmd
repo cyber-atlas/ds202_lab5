@@ -6,15 +6,15 @@ output: html_document
 ---
 
 ```{r}
-library('ggplot2')
-library('dplyr')
+# library('ggplot2')
+# library('dplyr')
 library('tidyverse')
 library('maps')
 
-acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
-
-
-person <- read.csv('person.csv', stringsAsFactors = FALSE)
+#acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
+acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
+person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
+#person <- read.csv('person.csv', stringsAsFactors = FALSE)
  
 # names(acc)
 # person$PER_TYP
@@ -135,7 +135,7 @@ head(countyCodeDF)
 
 countyPlottingInfo <- map_data("county")
 
-countyCodeDF <- countyCodeDF %>% mutate(`County Name` = tolower(`County Name`))
+countyCodeDF <- countyCodeDF %>% mutate('County Name' = tolower('County Name'))
 
 head(countyCodeDF)
 

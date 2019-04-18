@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 title: "team"
 author: "cyber-atlas, Sam Shifflett"
@@ -21,7 +20,7 @@ person <- read.csv('person.csv', stringsAsFactors = FALSE)
 ```
 
 
-```{r}
+```{r Number of Crashes Each Day}
 class(acc$DAY_WEEK)
 
 acc$DAY_WEEK <- factor(acc[,'DAY_WEEK'])
@@ -50,7 +49,7 @@ acc$HOUR<- factor(acc[,'HOUR'])
 
 levels(acc$HOUR)[levels(acc$HOUR) == 99] <- "unknown"
 
-levels(acc$HOUR)
+# levels(acc$HOUR)
 
 ggplot(data=acc, aes(x=HOUR, fill= stat(count), color=HOUR))+
          #fill=stat(count)))+
@@ -58,7 +57,8 @@ ggplot(data=acc, aes(x=HOUR, fill= stat(count), color=HOUR))+
   #geom_bar(aes(y=stat(count)))+
   geom_text(stat='count', aes(label=..count..), angle=90,hjust = -.5)+
   scale_y_continuous(limits=c(0,2500))+
-  theme(axis.text.x = element_text(angle =75, hjust=1))
+  theme(axis.text.x = element_text(angle =75, hjust=1))+
+  ggtitle("Number of Crashes Each Hour") + guides(fill=guide_legend("Days of the Month"))
 ```
 
 
@@ -85,29 +85,6 @@ ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
 
 ```
 
-##Prepare the Data and Packages
-```{r}
-acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
-library(tidyverse)
-library(ggplot2)
-```
-
-##Part One:
-###______Number of Crashes Each Day______
-```{r Number of Crashes Each Day}
-ggplot(acc,aes(x=factor(DAY_WEEK),fill=factor(DAY_WEEK))) + geom_bar(stat_count='identity') + ylab('Number of Crashes') + xlab("Day of the Week") + scale_x_discrete(breaks=c(1,2,3,4,5,6,7),labels=c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")) + ggtitle("Number of Crashes Each Day") + guides(fill=guide_legend("Days of the Week"))
-```
-
-###______Number of Crashes Each Hour______
-```{r}
-ggplot(acc,aes(x=factor(HOUR),fill=factor(HOUR))) + geom_bar(stat_count='identity') + ylab('Number of Crashes Per Hour') + xlab("Hour of Day") + ggtitle("Number of Crashes Each Hour") + guides(fill=guide_legend("Days of the Month"))
-```
-
-###______Number of Crashes With Drunk Drivers______
-```{r}
-ggplot(acc,aes(x=factor(DRUNK_DR),fill=factor(DRUNK_DR))) + geom_bar(stat_count='identity') + ylab('Number of Crashes') + xlab("Number of Drunk Drivers") + ggtitle("Number of Crashes With Drunk Drivers")  + guides(fill=guide_legend("Number of Drunks"))
-```
-
 ##Part Two:
 #####Person Type 1 is the Driver of the vehicle
 ```{r}
@@ -126,7 +103,7 @@ ggplot(joined,aes(x=HOUR.x,fill=factor(SEX))) + geom_bar(position="dodge") + fac
 ##Part Three:
 ###______Number of Crashes Per County______
 ```{r}
-GLC = readxl::read_xlsx("/Users/samuelshifflett/Documents/DS202/DS202_Github/ds202_lab5/ds202_lab5/GLC.xlsx")
+GLC = readxl::read_xlsx("GLC.xlsx")
 colnames(GLC) = GLC[1, ] 
 GLC = GLC[-1, ]
 names(GLC)
@@ -251,4 +228,3 @@ ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
 ```
 
 
->>>>>>> fe5751fdab3423f170a6d9ec38ad5fb3ea16a849

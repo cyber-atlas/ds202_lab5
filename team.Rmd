@@ -98,18 +98,23 @@ drivers <- person %>% filter(PER_TYP == 1)
 
 driversAccByCase <- inner_join(drivers, acc, by = "ST_CASE")
 
-# head(driversAccByCase)
+head(driversAccByCase)
 
+driversAccByCase$SEX <- factor(driversAccByCase[,'SEX'])
+levels(driversAccByCase$SEX)[levels(driversAccByCase$SEX) > 2] <- "unknown"
+levels(driversAccByCase$SEX)
+levels(driversAccByCase$SEX) <- list("Male" = 1, 'Female'=2,"Unknown"='unknown')
 
 ggplot(driversAccByCase, aes(x=factor(HOUR.y), fill=factor(SEX)))+
   geom_bar()+
-  facet_wrap(~DAY_WEEK)+
+  # facet_wrap(S~DAY_WEEK)+
+  facet_grid(DAY_WEEK~SEX, scales="free", space="free", height= )+
   theme(axis.text.x = element_text(angle =75, hjust=1, size= 8))+
    xlab("Hour of the Day") + 
   ylab("Number of Crashes") + 
    ggtitle("Number of Crashes Each Day of the Week by Hour and Sex") + 
    guides(fill=guide_legend("SEX")) +
-   scale_fill_discrete(name = "SEX", labels = c("Male","Female"))
+   scale_fill_discrete(name = "SEX", labels = c("Male","Female","Unknown"))
 
 ```
 
@@ -132,28 +137,50 @@ ggplot(driversAccByCase, aes(x=factor(HOUR.y), fill=factor(SEX)))+
 #   scale_fill_discrete(name = "SEX", labels = c("Male","Female"))
 ```
 
+
 ##Part Three:
 ###______Number of Crashes Per County______
 ```{r}
+#TODO makesure the column types are the same on the join
+
 GLC = readxl::read_xlsx("GLC.xlsx")
 colnames(GLC) = GLC[1, ] 
 GLC = GLC[-1, ]
 # names(GLC)
-head(GLC)
+#head(GLC)
 counties = map_data("county")
 names(GLC)[6] = "COUNTY"
+
 names(GLC)[7] = "County_Name"
+GLC$COUNTY <- as.numeric(GLC$COUNTY)
+
 GLC$COUNTY = factor(GLC$COUNTY)
+GLC$`State Code` =  as.integer(GLC$`State Code`)
 acc$COUNTY = factor(acc$COUNTY)
 names(counties)[6] = "County_Name"
-countacc = inner_join(acc,GLC, by="COUNTY") %>% select(LATITUDE,LONGITUD,COUNTY,"County_Name",DAY,MONTH,YEAR,HOUR,"State Name")
+
+
+countacc = inner_join(acc,GLC, by= c("COUNTY"="COUNTY", "STATE" = "State Code")) %>%
+  select(LATITUDE,LONGITUD,COUNTY,"County_Name",DAY,MONTH,YEAR,HOUR,"State Name")
 
 countacc = countacc %>% mutate(County_Name = tolower(County_Name))
+
 countaccgroup = countacc %>% group_by(County_Name) %>% summarise(total_crashes = n())
 
 countaccgroup = left_join(countaccgroup,counties, by="County_Name")
 
-countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long, y = lat,fill=total_crashes)) + geom_polygon(aes(group=group)) + ggtitle("Crashes Per County")  + guides(fill=guide_legend("Total Crashes")) + scale_fill_continuous(low="white",high = ("red"))
+head(acc)
+head(GLC)
+head(countacc)
+head(countaccgroup)
+
+
+countaccgroup %>% group_by("County_Name") %>% 
+  ggplot(aes(x = long, y = lat,fill=total_crashes)) +
+  geom_polygon(aes(group=group)) +
+  ggtitle("Crashes Per County")  +
+  guides(fill=guide_legend("Total Crashes")) +
+  scale_fill_continuous(low="white",high = ("dark red"))
 ```
 
 ###______Ration of Crashes Per State by Season______

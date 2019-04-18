@@ -12,9 +12,9 @@ library('ggplot2')
 acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
 class(acc)
 
-#person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
+person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
 
-person <- read.csv('person.csv', stringsAsFactors = FALSE)
+#person <- read.csv('person.csv', stringsAsFactors = FALSE)
 
 
 ```
@@ -26,7 +26,7 @@ class(acc$DAY_WEEK)
 acc$DAY_WEEK <- factor(acc[,'DAY_WEEK'])
 levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
 
-levels(acc$DAY_WEEK)
+# levels(acc$DAY_WEEK)
 
 ggplot(data=acc, aes(x=DAY_WEEK, fill= DAY_WEEK))+
   geom_bar()+
@@ -88,7 +88,6 @@ ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
 ##Part Two:
 #####Person Type 1 is the Driver of the vehicle
 ```{r}
-person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv", stringsAsFactors = FALSE)
 filperson = filter(person, PER_TYP==1)
 joined = inner_join(filperson, acc, by = "ST_CASE", type = "inner", match = "all")
 ```
@@ -138,93 +137,8 @@ countaccseason %>% group_by("region") %>% ggplot(aes(x = long, y = lat,fill=rati
 As you can see the map is most red in Delaware meaning that the difference in crashes is the largest. Therefore Delaware has the worst time driving in the winter months.
 
 
-=======
----
-title: "team"
-author: "cyber-atlas"
-date: "April 11, 2019"
-output: html_document
----
-
-```{r}
-library('ggplot2')
-#acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
-
-acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
-class(acc)
-
-#person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
-
-person$PER_TYP
-
-person <- read.csv('person.csv', stringsAsFactors = FALSE)
-
-
-```
-
-
-```{r}
-class(acc$DAY_WEEK)
-
-acc$DAY_WEEK <- factor(acc[,'DAY_WEEK'])
-levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
-
-levels(acc$DAY_WEEK)
-
-ggplot(data=acc, aes(x=DAY_WEEK, fill= DAY_WEEK))+
-  geom_bar()+
-  #geom_bar(aes(y=stat(count)))+
-  geom_text(stat='count', aes(label=..count..), vjust = -.5)+
-  scale_y_continuous(limits=c(0,6500))+
-  theme(axis.text.x = element_text(angle =45, hjust=1))
 
 
 
-```
-
-
-Show the breakdown of the accidents by hour
-
-```{r}
-class(acc$HOUR)
-
-acc$HOUR<- factor(acc[,'HOUR'])
-
-levels(acc$HOUR)[levels(acc$HOUR) == 99] <- "unknown"
-
-levels(acc$HOUR)
-
-ggplot(data=acc, aes(x=HOUR, fill= stat(count), color=HOUR))+
-         #fill=stat(count)))+
-  geom_bar()+
-  #geom_bar(aes(y=stat(count)))+
-  geom_text(stat='count', aes(label=..count..), angle=90,hjust = -.5)+
-  scale_y_continuous(limits=c(0,2500))+
-  theme(axis.text.x = element_text(angle =75, hjust=1))
-```
-
-
-
-```{r}
-
-class(acc$DRUNK_DR)
-
-acc$DRUNK_DR<- factor(acc[,'DRUNK_DR'])
-
-#levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
-
-levels(acc$'DRUNK_DR')
-
-ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
-         #fill=stat(count)))+
-  geom_bar()+
- # geom_bar(aes(y=frequency(DRUNK_DR)))+
-  geom_text(stat='count', aes(label=..count..), angle=0,vjust = -.1)
-  #scale_y_continuous(limits=c(0,3000))
-  #theme(axis.text.x = element_text(angle =75, hjust=1))
-  #facet_wrap(~DRUNK_DR)
-
-
-```
 
 

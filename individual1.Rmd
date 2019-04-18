@@ -11,10 +11,10 @@ output: html_document
 library('tidyverse')
 library('maps')
 
-#acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
-acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
-person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
-#person <- read.csv('person.csv', stringsAsFactors = FALSE)
+acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
+# acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
+# person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
+person <- read.csv('person.csv', stringsAsFactors = FALSE)
  
 # names(acc)
 # person$PER_TYP
@@ -98,10 +98,15 @@ Identify the drivers
 #Drivers are person type 1, so only select those
 drivers <- person %>% filter(PER_TYP == 1)
 
+driversAccByCase <- inner_join(drivers, acc, by = "ST_CASE")
 
-acc
-person
+head(driversAccByCase)
 
+
+ggplot(driversAccByCase, aes(x=factor(HOUR.y), fill=factor(SEX)))+
+  geom_bar()+
+  facet_wrap(~DAY_WEEK)+
+  theme(axis.text.x = element_text(angle =75, hjust=1))
 
 ```
 

@@ -6,7 +6,10 @@ output: html_document
 ---
 
 ```{r}
-library('ggplot2')
+library(ggplot2)
+library(tidyverse)
+library('dplyr')
+library('maps')
 #acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
 
 acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
@@ -87,17 +90,46 @@ ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
 
 ##Part Two:
 #####Person Type 1 is the Driver of the vehicle
+
 ```{r}
-head(person$PER_TYP)
-filperson = filter(person, PER_TYP == 1)
-joined = inner_join(filperson, acc, by = "ST_CASE", type = "inner", match = "all")
+# person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
+person <- read.csv('person.csv', stringsAsFactors = TRUE)
+drivers <- person %>% filter(PER_TYP == 1)
+
+driversAccByCase <- inner_join(drivers, acc, by = "ST_CASE")
+
+# head(driversAccByCase)
+
+
+ggplot(driversAccByCase, aes(x=factor(HOUR.y), fill=factor(SEX)))+
+  geom_bar()+
+  facet_wrap(~DAY_WEEK)+
+  theme(axis.text.x = element_text(angle =75, hjust=1, size= 8))+
+   xlab("Hour of the Day") + 
+  ylab("Number of Crashes") + 
+   ggtitle("Number of Crashes Each Day of the Week by Hour and Sex") + 
+   guides(fill=guide_legend("SEX")) +
+   scale_fill_discrete(name = "SEX", labels = c("Male","Female"))
+
 ```
-###______Number of Crashes Each Day of the Week By Hour and Sex______
+
 ```{r}
-joined = filter(joined, joined$HOUR.x < 25)
-joined = filter(joined, joined$SEX < 3)
-joined$DAY_WEEK = factor(joined$DAY_WEEK,labels=c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"))
-ggplot(joined,aes(x=HOUR.x,fill=factor(SEX))) + geom_bar(position="dodge") + facet_wrap(joined$DAY_WEEK) + xlab("Hour of the Day") + ylab("Number of Crashes") + ggtitle("Number of Crashes Each Day of the Week by Hour and Sex") + guides(fill=guide_legend("SEX")) + scale_fill_discrete(name = "SEX", labels = c("Male","Female"))
+# filperson <- person %>% filter ("PER_TYP" == 1)
+# joined = inner_join(filperson, acc, by = "ST_CASE")
+# head(joined)
+# 
+# ###______Number of Crashes Each Day of the Week By Hour and Sex______
+# joined = filter(joined, joined$HOUR.x < 25)
+# joined = filter(joined, joined$SEX < 3)
+# joined$DAY_WEEK = factor(joined$DAY_WEEK,labels=c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"))
+# ggplot(joined,aes(x=factor(HOUR.x),fill=factor(SEX))) + 
+#   geom_bar(position="dodge") +
+  # facet_wrap(~DAY_WEEK) +
+#   xlab("Hour of the Day") + 
+#   ylab("Number of Crashes") + 
+#   ggtitle("Number of Crashes Each Day of the Week by Hour and Sex") + 
+#   guides(fill=guide_legend("SEX")) +
+#   scale_fill_discrete(name = "SEX", labels = c("Male","Female"))
 ```
 
 ##Part Three:

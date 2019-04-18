@@ -91,10 +91,8 @@ Part 2
 
 Identify the drivers
 
-** TODO skipping over this, not sure which variables to join the tables on **
 
 ```{r}
-# TODO finsih
 #Drivers are person type 1, so only select those
 drivers <- person %>% filter(PER_TYP == 1)
 

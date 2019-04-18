@@ -9,15 +9,16 @@ output: html_document
 library('ggplot2')
 library('dplyr')
 library('tidyverse')
+library('maps')
 
 acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
 
 
 person <- read.csv('person.csv', stringsAsFactors = FALSE)
-
-names(acc)
-person$PER_TYP
-names(person)
+ 
+# names(acc)
+# person$PER_TYP
+# names(person)
 
 ```
 
@@ -112,12 +113,36 @@ frpp <- readxl::read_xlsx('FRPP GLC United States.xlsx')
 #copy acc in case we need it again
 acc2 <- acc
 #Rename the state to State Code so we can do a merge
-names(acc2)[names(acc2) == "STATE"] <- "State Code"
+#names(acc2)[names(acc2) == "STATE"] <- "State Code"
+names(acc2)[names(acc2) == "COUNTY"] <- "County Code"
 head(acc2)
 #TODO
-acc2$"State Code"<- factor(acc2[,'State Code'])
-frpp$"State Code"<- factor(frpp[,'State Code'])
+#acc2$"State Code"<- factor(acc2[,'State Code'])
+acc2$"County Code"<- factor(acc2[,'County Code'])
+#Need to save as a df first I guess
+frpp<-data.frame(frpp)
+class(frpp)
+colnames(frpp) <- frpp[1,]
+frpp <- frpp[-1,]
+head(frpp)
+#frpp$"State Code"<- factor(frpp[,'State Code'])
+frpp$"County Code"<- factor(frpp[,'County Code'])
+#frpp[,3]<- factor(frpp[,3])
 
-inner_join(acc2,frpp, by= "State Code" )
+#inner_join(acc2,frpp, by= "State Code" )
+countyCodeDF<- inner_join(acc2,frpp, by= "County Code" )
+head(countyCodeDF)
+
+countyPlottingInfo <- map_data("county")
+
+countyCodeDF <- countyCodeDF %>% mutate(`County Name` = tolower(`County Name`))
+
+head(countyCodeDF)
+
+countyCodeDF <- countyCodeDF %>% group_by('County Name') %>%  summarize(n=n())
 
 ```
+
+
+
+

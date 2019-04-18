@@ -14,6 +14,8 @@ class(acc)
 
 #person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
 
+person$PER_TYP
+
 person <- read.csv('person.csv', stringsAsFactors = FALSE)
 
 

@@ -159,7 +159,7 @@ accBySzn <- transform(accBySzn, SEASON = case_when((accBySzn$MONTH >= 11 | accBy
 
 accBySzn = accBySzn[complete.cases(accBySzn[,4]),]
 accBySzn = accBySzn %>% group_by(County_Name,SEASON) %>% summarise(total_crash = sum(total_crashes))  
-accBySzn = accBySzn %>% left_join(counties,by="County_Name")
+accBySzn = accBySzn %>% left_join(countyPlottingInfo,by="County_Name")
 accBySzn = accBySzn %>% group_by(region,SEASON) %>% summarise(total_crashes=sum(total_crash))
 accBySzn = accBySzn %>% spread(SEASON,total_crashes)
 

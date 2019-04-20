@@ -396,7 +396,6 @@ ggplot(driversAccByCase, aes(x=factor(HOUR.y), fill=factor(SEX)))+
    ggtitle("Number of Crashes Each Day of the Week by Hour and Sex") + 
    guides(fill=guide_legend("SEX")) +
    scale_fill_discrete(name = "SEX", labels = c("Male","Female","Unknown"))
-
 ```
 
 ```{r}

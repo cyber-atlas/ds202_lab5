@@ -143,7 +143,7 @@ ggplot(driversAccByCase, aes(x=factor(HOUR.y), fill=factor(SEX)))+
 
 ##Part Three:
 ###______Number of Crashes Per County______
-```{r}
+```{r echo=TRUE}
 #TODO makesure the column types are the same on the join
 
 GLC = readxl::read_xlsx("GLC.xlsx")
@@ -178,38 +178,69 @@ countaccgroup = countacc %>% group_by(County_Name,`State Name`) %>% summarise(to
 # countaccgroup = left_join(countaccgroup,counties, by=c("County_Name","State Name"="region"))
 countaccgroup = inner_join(countaccgroup,counties, by=c("County_Name","State Name"="region"))
 
-head(acc)
-head(GLC)
-head(countacc)
-head(countaccgroup)
 
-?scale_size_manual
+#This makes the levels we are going to put in the factor
+totCrashGroups <- seq(min(countaccgroup$total_crashes),max(countaccgroup$total_crashes), len=15)
 
-# table(countaccgroup$total_crashes)
+#Apply the levels to the factors and to the dataframe
+countaccgroup$totCrashGroups <- as.factor(cut(countaccgroup$total_crashes, totCrashGroups))
 
-countaccgroup$totCrashGroups <- as.factor(as.numeric(cut(countaccgroup$total_crashes, seq(min(countaccgroup$total_crashes),max(countaccgroup$total_crashes), len=15)))) 
+#Another attempt at the above worksish
+# countaccgroup$totCrashGroups <- as.factor(as.numeric(cut(countaccgroup$total_crashes, seq(min(countaccgroup$total_crashes),max(countaccgroup$total_crashes), len=15)))) 
 
+
+#We had this originally before the factor level  
+# countaccgroup %>% group_by("group")%>%
+
+
+# TODO fix the scale jeez
+  
+#Notes revisited
+
+
+# ggplot(countaccgroup, aes(x = long, y = lat))+
+#   geom_polygon(aes(group=group,fill=totCrashGroups)) +
+#   geom_path(aes(group=group))+
+#   ggtitle("Crashes Per County")  +
+#   guides(fill=guide_legend("Total Crashes"))+
+#   theme(panel.background = element_rect(fill = "white"))
+
+    # scale_fill_gradient2(limits=c(0,250000))
+    # scale_fill_gradient2()
+  # scale_fill_continuous(low="white",high = ("dark red"))
+
+
+#THE GUIDE
+
+# ggplot(countaccgroup, aes(x = long, y = lat, group=group)) +
+#   geom_polygon(aes(fill=totCrashGroups)) +
+#   ggtitle("Crashes Per County")  +
+#   guides(fill=guide_legend("Total Crashes")) +
+#     # scale_fill_gradient2(limits=c(0,250000))
+#     # scale_fill_gradient2()
+#   scale_fill_continuous(low="white",high = ("dark red"))
+
+
+  
+# THE OG
+#We had this originally before the factor level  
 # countaccgroup %>% group_by("group")%>%
   
-ggplot(countaccgroup, aes(x = long, y = lat, group=group)) +
-  geom_polygon(aes(fill=totCrashGroups)) +
+# TODO fix the scale jeez
+
+#OG code
+countaccgroup%>%group_by("County_Name") %>% ggplot(aes(x = long, y = lat,fill=total_crashes)) + geom_polygon(aes(group=group)) + ggtitle("Crashes Per County")  + guides(fill=guide_legend("Total Crashes")) + scale_fill_continuous(low="white",high = ("red"))
+
+#Another one of my attempts
+countaccgroup %>% group_by("County_Name") 
+countaccgroup %>% group_by("group") %>%
+  ggplot(aes(x = long, y = lat,fill=log(total_crashes))) +
+   geom_polygon(aes(group=group))+
   ggtitle("Crashes Per County")  +
   guides(fill=guide_legend("Total Crashes")) +
     # scale_fill_gradient2(limits=c(0,250000))
     # scale_fill_gradient2()
   scale_fill_continuous(low="white",high = ("dark red"))
-
-
-#TODO fix the scale jeez
-# countaccgroup %>% group_by("County_Name") %>% 
-# countaccgroup %>% group_by("group") %>% 
-#   ggplot(aes(x = long, y = lat,fill=total_crashes)) +
-#   geom_polygon(aes(group=group)) +
-#   ggtitle("Crashes Per County")  +
-#   guides(fill=guide_legend("Total Crashes")) +
-#     # scale_fill_gradient2(limits=c(0,250000))
-#     scale_fill_gradient2()
-#   # scale_fill_continuous(low="white",high = ("dark red"))
 ```
 
 ###______Ration of Crashes Per State by Season______
@@ -224,7 +255,16 @@ countaccseason = countaccseason %>% group_by(region,SEASON) %>% summarise(total_
 countaccseason = countaccseason %>% spread(SEASON,total_crashes)
 countaccseason = countaccseason %>% group_by(region) %>% summarise(ratioSUMbyWINT = SUMMER/WINTER)
 countaccseason = countaccseason %>% left_join(states,by="region")
-countaccseason %>% group_by("region") %>% ggplot(aes(x = long, y = lat,fill=ratioSUMbyWINT)) + geom_polygon(aes(group=group)) + ggtitle("Ratio of Total Crashes Per State (Summer/Winter)")  + guides(fill=guide_legend("Crash Percentage")) + scale_fill_continuous(low="green",high = ("black"))
+
+#Group by the reigon, fill bashed on the creash percentage
+
+countaccseason %>%
+  group_by("region") %>% 
+  ggplot(aes(x = long, y = lat,fill=ratioSUMbyWINT)) +
+  geom_polygon(aes(group=group)) + 
+  ggtitle("Ratio of Total Crashes Per State (Summer/Winter)")  +
+  guides(fill=guide_legend("Crash Percentage")) +
+  scale_fill_continuous(low="green",high = ("black"))
 ```
 
 As you can see the map is most light green in Delaware meaning that the difference in crashes is the largest. Therefore Delaware has the worst time driving in the winter months.

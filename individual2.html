@@ -262,12 +262,7 @@ ggplot(joined,aes(x=HOUR.x,fill=factor(SEX))) + geom_bar(position=&quot;dodge&qu
 ## * … and 4 more</code></pre>
 <pre class="r"><code>colnames(GLC) = GLC[1, ] 
 GLC = GLC[-1, ]
-names(GLC)</code></pre>
-<pre><code>##  [1] &quot;Territory&quot;         &quot;State Name&quot;        &quot;State Code&quot;       
-##  [4] &quot;City Code&quot;         &quot;City Name&quot;         &quot;County Code&quot;      
-##  [7] &quot;County Name&quot;       &quot;Country Code&quot;      &quot;Old City Name&quot;    
-## [10] &quot;Date Record Added&quot;</code></pre>
-<pre class="r"><code>counties = map_data(&quot;county&quot;)</code></pre>
+counties = map_data(&quot;county&quot;)</code></pre>
 <pre><code>## 
 ## Attaching package: 'maps'</code></pre>
 <pre><code>## The following object is masked from 'package:purrr':

@@ -53,7 +53,6 @@ ggplot(joined,aes(x=HOUR.x,fill=factor(SEX))) + geom_bar(position="dodge") + fac
 GLC = readxl::read_xlsx("GLC.xlsx")
 colnames(GLC) = GLC[1, ] 
 GLC = GLC[-1, ]
-names(GLC)
 counties = map_data("county")
 names(GLC)[6] = "COUNTY"
 names(GLC)[7] = "County_Name"

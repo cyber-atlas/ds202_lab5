@@ -7,6 +7,8 @@ output: html_document
 
 ```{r}
 library('ggplot2')
+library(tidyverse)
+library(ggplot2)
 #acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
 
 acc<- read.csv('accident.csv', stringsAsFactors = FALSE)

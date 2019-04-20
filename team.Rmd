@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "team"
 author: "cyber-atlas, Sam Shifflett"
@@ -274,3 +275,281 @@ countaccseason %>%
 As you can see the map is most light green in Delaware meaning that the difference in crashes is the largest. Therefore Delaware has the worst time driving in the winter months.
 
 Arizona is the most netural becasue it is the most black. So the grashes are about the same in summer and winter. 
+=======
+---
+title: "team"
+author: "cyber-atlas, Sam Shifflett"
+date: "April 11, 2019"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library('dplyr')
+library('maps')
+#acc <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/accident.csv", stringsAsFactors = FALSE)
+
+acc<- read.csv('accident.csv', stringsAsFactors = FALSE)
+class(acc)
+
+person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
+
+#person <- read.csv('person.csv', stringsAsFactors = FALSE)
+
+
+```
+
+
+```{r Number of Crashes Each Day}
+class(acc$DAY_WEEK)
+
+acc$DAY_WEEK <- factor(acc[,'DAY_WEEK'])
+levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
+
+# levels(acc$DAY_WEEK)
+
+ggplot(data=acc, aes(x=DAY_WEEK, fill= DAY_WEEK))+
+  geom_bar()+
+  #geom_bar(aes(y=stat(count)))+
+  geom_text(stat='count', aes(label=..count..), vjust = -.5)+
+  scale_y_continuous(limits=c(0,6500))+
+  theme(axis.text.x = element_text(angle =45, hjust=1))
+
+
+
+```
+
+
+Show the breakdown of the accidents by hour
+
+```{r}
+class(acc$HOUR)
+
+acc$HOUR<- factor(acc[,'HOUR'])
+
+levels(acc$HOUR)[levels(acc$HOUR) == 99] <- "unknown"
+
+# levels(acc$HOUR)
+
+ggplot(data=acc, aes(x=HOUR, fill= stat(count), color=HOUR))+
+         #fill=stat(count)))+
+  geom_bar()+
+  #geom_bar(aes(y=stat(count)))+
+  geom_text(stat='count', aes(label=..count..), angle=90,hjust = -.5)+
+  scale_y_continuous(limits=c(0,2500))+
+  theme(axis.text.x = element_text(angle =75, hjust=1))+
+  ggtitle("Number of Crashes Each Hour") + guides(fill=guide_legend("Days of the Month"))
+```
+
+
+
+```{r}
+
+class(acc$DRUNK_DR)
+
+acc$DRUNK_DR<- factor(acc[,'DRUNK_DR'])
+
+#levels(acc$DAY_WEEK) <- list("Sunday" = 1, 'Monday'=2, 'Tuesday'=3, 'Wednesday'=4, 'Thursday'=5, 'Friday'=6, 'Saturday'=7)
+
+levels(acc$'DRUNK_DR')[levels(acc$'DRUNK_DR') == 3] <- "unknown"
+levels(acc$'DRUNK_DR')
+
+ggplot(data=acc, aes(x=DRUNK_DR, fill=DRUNK_DR, color=stat(count)))+
+         #fill=stat(count)))+
+  geom_bar()+
+ # geom_bar(aes(y=frequency(DRUNK_DR)))+
+  geom_text(stat='count', aes(label=..count..), angle=0,vjust = -.1)
+  #scale_y_continuous(limits=c(0,3000))
+  #theme(axis.text.x = element_text(angle =75, hjust=1))
+  #facet_wrap(~DRUNK_DR)
+
+
+```
+
+##Part Two:
+#####Person Type 1 is the Driver of the vehicle
+
+```{r}
+# person <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/fars2017/person.csv")
+person <- read.csv('person.csv', stringsAsFactors = TRUE)
+drivers <- person %>% filter(PER_TYP == 1)
+
+driversAccByCase <- inner_join(drivers, acc, by = "ST_CASE")
+
+head(driversAccByCase)
+
+driversAccByCase$SEX <- factor(driversAccByCase[,'SEX'])
+levels(driversAccByCase$SEX)[levels(driversAccByCase$SEX) > 2] <- "unknown"
+levels(driversAccByCase$SEX)
+levels(driversAccByCase$SEX) <- list("Male" = 1, 'Female'=2,"Unknown"='unknown')
+
+#TODO Make them taller
+
+ggplot(driversAccByCase, aes(x=factor(HOUR.y), fill=factor(SEX)))+
+  geom_bar()+
+  # facet_wrap(S~DAY_WEEK)+
+  facet_grid(DAY_WEEK~SEX, scales="free", space="free" )+
+  theme(axis.text.x = element_text(angle =75, hjust=1, size= 8))+
+   xlab("Hour of the Day") + 
+  ylab("Number of Crashes") + 
+   ggtitle("Number of Crashes Each Day of the Week by Hour and Sex") + 
+   guides(fill=guide_legend("SEX")) +
+   scale_fill_discrete(name = "SEX", labels = c("Male","Female","Unknown"))
+
+```
+
+```{r}
+# filperson <- person %>% filter ("PER_TYP" == 1)
+# joined = inner_join(filperson, acc, by = "ST_CASE")
+# head(joined)
+# 
+# ###______Number of Crashes Each Day of the Week By Hour and Sex______
+# joined = filter(joined, joined$HOUR.x < 25)
+# joined = filter(joined, joined$SEX < 3)
+# joined$DAY_WEEK = factor(joined$DAY_WEEK,labels=c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"))
+# ggplot(joined,aes(x=factor(HOUR.x),fill=factor(SEX))) + 
+#   geom_bar(position="dodge") +
+  # facet_wrap(~DAY_WEEK) +
+#   xlab("Hour of the Day") + 
+#   ylab("Number of Crashes") + 
+#   ggtitle("Number of Crashes Each Day of the Week by Hour and Sex") + 
+#   guides(fill=guide_legend("SEX")) +
+#   scale_fill_discrete(name = "SEX", labels = c("Male","Female"))
+```
+
+
+##Part Three:
+###______Number of Crashes Per County______
+```{r echo=TRUE}
+#TODO makesure the column types are the same on the join
+
+GLC = readxl::read_xlsx("GLC.xlsx")
+colnames(GLC) = GLC[1, ] 
+GLC = GLC[-1, ]
+# names(GLC)
+#head(GLC)
+counties = map_data("county")
+class(counties)
+names(counties)
+head(counties)
+
+names(GLC)[6] = "COUNTY"
+
+names(GLC)[7] = "County_Name"
+GLC$COUNTY <- as.numeric(GLC$COUNTY)
+
+GLC$COUNTY = factor(GLC$COUNTY)
+GLC$`State Code` =  as.integer(GLC$`State Code`)
+acc$COUNTY = factor(acc$COUNTY)
+names(counties)[6] = "County_Name"
+
+
+countacc = inner_join(acc,GLC, by= c("COUNTY"="COUNTY", "STATE" = "State Code")) %>%
+  select(LATITUDE,LONGITUD,COUNTY,"County_Name",DAY,MONTH,YEAR,HOUR,"State Name")
+
+countacc = countacc %>% mutate(County_Name = tolower(County_Name))
+countacc = countacc %>% mutate("State Name" = tolower(countacc$`State Name`))
+
+countaccgroup = countacc %>% group_by(County_Name,`State Name`) %>% summarise(total_crashes = n())
+
+# countaccgroup = left_join(countaccgroup,counties, by=c("County_Name","State Name"="region"))
+countaccgroup = inner_join(countaccgroup,counties, by=c("County_Name","State Name"="region"))
+
+
+#This makes the levels we are going to put in the factor
+totCrashGroups <- seq(min(countaccgroup$total_crashes),max(countaccgroup$total_crashes), len=15)
+
+#Apply the levels to the factors and to the dataframe
+countaccgroup$totCrashGroups <- as.factor(cut(countaccgroup$total_crashes, totCrashGroups))
+
+#Another attempt at the above worksish
+# countaccgroup$totCrashGroups <- as.factor(as.numeric(cut(countaccgroup$total_crashes, seq(min(countaccgroup$total_crashes),max(countaccgroup$total_crashes), len=15)))) 
+
+
+#We had this originally before the factor level  
+# countaccgroup %>% group_by("group")%>%
+
+
+# TODO fix the scale jeez
+  
+#Notes revisited
+
+
+# ggplot(countaccgroup, aes(x = long, y = lat))+
+#   geom_polygon(aes(group=group,fill=totCrashGroups)) +
+#   geom_path(aes(group=group))+
+#   ggtitle("Crashes Per County")  +
+#   guides(fill=guide_legend("Total Crashes"))+
+#   theme(panel.background = element_rect(fill = "white"))
+
+    # scale_fill_gradient2(limits=c(0,250000))
+    # scale_fill_gradient2()
+  # scale_fill_continuous(low="white",high = ("dark red"))
+
+
+#THE GUIDE
+
+# ggplot(countaccgroup, aes(x = long, y = lat, group=group)) +
+#   geom_polygon(aes(fill=totCrashGroups)) +
+#   ggtitle("Crashes Per County")  +
+#   guides(fill=guide_legend("Total Crashes")) +
+#     # scale_fill_gradient2(limits=c(0,250000))
+#     # scale_fill_gradient2()
+#   scale_fill_continuous(low="white",high = ("dark red"))
+
+
+  
+# THE OG
+#We had this originally before the factor level  
+# countaccgroup %>% group_by("group")%>%
+  
+# TODO fix the scale jeez
+
+#OG code
+countaccgroup%>%group_by("County_Name") %>% ggplot(aes(x = long, y = lat,fill=log(total_crashes))) + geom_polygon(aes(group=group)) + ggtitle("Crashes Per County")  + guides(fill=guide_legend("Total Crashes")) + scale_fill_continuous(low="white",high = ("red"))
+
+#Another one of my attempts
+countaccgroup %>% group_by("County_Name") 
+countaccgroup %>% group_by("group") %>%
+  ggplot(aes(x = long, y = lat,fill=totCrashGroups)) +
+   geom_polygon(aes(group=group))+
+  ggtitle("Crashes Per County")  +
+  guides(fill=guide_legend("Total Crashes")) 
+    # scale_fill_gradient2(limits=c(0,250000))
+    # scale_fill_gradient2()
+  # scale_fill_continuous(low="white",high = ("dark red"))
+```
+
+###______Ration of Crashes Per State by Season______
+```{r}
+states = map_data("state")
+countaccseason = countacc %>% group_by(County_Name,MONTH) %>% summarise(total_crashes=n())
+countaccseason = transform(countaccseason, SEASON = case_when((countaccseason$MONTH >= 11 | countaccseason$MONTH <= 3) ~ "WINTER", (countaccseason$MONTH >= 5 & countaccseason$MONTH <= 8) ~ "SUMMER"))
+countaccseason = countaccseason[complete.cases(countaccseason[,4]),]
+countaccseason = countaccseason %>% group_by(County_Name,SEASON) %>% summarise(total_crash = sum(total_crashes))  
+countaccseason = countaccseason %>% left_join(counties,by="County_Name")
+countaccseason = countaccseason %>% group_by(region,SEASON) %>% summarise(total_crashes=sum(total_crash))
+countaccseason = countaccseason %>% spread(SEASON,total_crashes)
+countaccseason = countaccseason %>% group_by(region) %>% summarise(ratioSUMbyWINT = SUMMER/WINTER)
+countaccseason = countaccseason %>% left_join(states,by="region")
+
+#Group by the reigon, fill bashed on the creash percentage
+
+countaccseason %>%
+  group_by("region") %>% 
+  ggplot(aes(x = long, y = lat,fill=ratioSUMbyWINT)) +
+  geom_polygon(aes(group=group)) + 
+  ggtitle("Ratio of Total Crashes Per State (Summer/Winter)")  +
+  guides(fill=guide_legend("Crash Percentage")) +
+  scale_fill_continuous(low="green",high = ("black"))
+```
+
+As you can see the map is most light green in Delaware meaning that the difference in crashes is the largest. Therefore Delaware has the worst time driving in the winter months.
+
+Arizona is the most netural becasue it is the most black. So the grashes are about the same in summer and winter. 
+
+
+
+
+>>>>>>> c24e56db504389a582b7e7904e3e1572150e00d0

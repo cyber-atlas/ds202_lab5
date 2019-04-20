@@ -142,7 +142,7 @@ head(countyPlottingInfo)
 countaccgroup = left_join(countaccgroup,countyPlottingInfo, by="County_Name")
 
 # countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long.x, y = lat.x, fill=total_crashes)) + geom_polygon(aes(group=group.x))   + guides(fill=guide_legend("Total Crashes"))
-countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long, y = lat, fill=total_crashes)) + geom_polygon(aes(group=group))   + guides(fill=guide_legend("Total Crashes"))
+countaccgroup %>% group_by("County_Name") %>% ggplot(aes(x = long, y = lat, fill=total_crashes)) + geom_polygon(aes(group=group))  + guides(fill=guide_legend("Total Crashes"))
 
 
 ```
